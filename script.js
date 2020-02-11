@@ -1,11 +1,17 @@
 let countdownItem = document.getElementById("countdown");
+let countdownContainerItem = document.getElementById("countdown-container");
 let totalItem = document.getElementById("total");
 let windowItem = document.getElementById("window");
 
 const isOpenClass = "is-open";
+const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1uaD3WagQYZu2Ho0GE9Sh0-gl5ZVFG0LabC4RZh1olQQ/edit?usp=sharing';
 
-let startDate = moment("2019-08-13 00:00:00");
-let endDate = moment("2021-08-13 00:00:00");
+let startDate;
+let endDate;
+
+let totalYears;
+let totalMonths;
+let totalDays;
 
 let interval = setInterval(updateTime, 1000);
 
@@ -35,6 +41,7 @@ function updateTime() {
 
     countdownItem.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
     totalItem.innerHTML = leftYears + "y " + leftMonths + "m  " + leftDays + "d / 2y";
+    totalItem.innerHTML = `${leftYears}y ${leftMonths}m ${leftDays}d / ${totalYears > 0 ? totalYears + "y " : ""}${totalMonths > 0 ? totalMonths + "m " : ""}${totalDays > 0 ? totalDays + "d " : ""}`;
 
     if (endDate.diff(now, 'seconds') < 0) {
         clearInterval(interval);
@@ -44,4 +51,36 @@ function updateTime() {
     }
 }
 
-updateTime();
+function initTableTop() {
+    Tabletop.init({
+        key: publicSpreadsheetUrl,
+        callback: onGetDataFromSpreadsheet
+    })
+}
+
+function onGetDataFromSpreadsheet(data) {
+    let prisonData = data.prison.all();
+
+    if (prisonData && prisonData.length > 0) {
+        let firstPrisonData = prisonData[0];
+
+        startDate = moment(firstPrisonData.start);
+        endDate = moment(firstPrisonData.end);
+
+        let date = endDate.clone();
+
+        totalYears = date.diff(startDate, 'years');
+        date = date.subtract(totalYears, 'years');
+
+        totalMonths = date.diff(startDate, 'months');
+        date = date.subtract(totalMonths, 'months');
+
+        totalDays = date.diff(startDate, 'days');
+
+        countdownContainerItem.classList.remove("hidden");
+
+        updateTime();
+    }
+}
+
+window.addEventListener('DOMContentLoaded', initTableTop)
