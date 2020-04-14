@@ -13,7 +13,7 @@ let totalYears;
 let totalMonths;
 let totalDays;
 
-let interval = setInterval(updateTime, 1000);
+let interval;
 
 function updateTime() {
     let now = moment();
@@ -23,19 +23,19 @@ function updateTime() {
     let days = date.diff(now, 'days');
 
     let leftYears = date.diff(now, 'years');
-    date = date.subtract(leftYears, 'years');
+    date.subtract(leftYears, 'years');
 
     let leftMonths = date.diff(now, 'months');
-    date = date.subtract(leftMonths, 'months');
+    date.subtract(leftMonths, 'months');
 
     let leftDays = date.diff(now, 'days');
-    date = date.subtract(leftDays, 'days');
+    date.subtract(leftDays, 'days');
 
     let hours = date.diff(now, 'hours');
-    date = date.subtract(hours, 'hours');
+    date.subtract(hours, 'hours');
 
     let minutes = date.diff(now, 'minutes');
-    date = date.subtract(minutes, 'minutes');
+    date.subtract(minutes, 'minutes');
 
     let seconds = date.diff(now, 'seconds');
 
@@ -70,16 +70,18 @@ function onGetDataFromSpreadsheet(data) {
         let date = endDate.clone();
 
         totalYears = date.diff(startDate, 'years');
-        date = date.subtract(totalYears, 'years');
+        date.subtract(totalYears, 'years');
 
         totalMonths = date.diff(startDate, 'months');
-        date = date.subtract(totalMonths, 'months');
+        date.subtract(totalMonths, 'months');
 
         totalDays = date.diff(startDate, 'days');
 
         countdownContainerItem.classList.remove("hidden");
 
         updateTime();
+
+        interval = setInterval(updateTime, 1000);
     }
 }
 
